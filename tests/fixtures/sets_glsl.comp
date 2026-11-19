@@ -1,0 +1,16 @@
+#version 460
+
+// GLSL: one entry point a module, and its name is `main`.
+layout(local_size_x = 1) in;
+
+layout(set = 0, binding = 0) readonly buffer Source {
+    uint values[];
+} source;
+
+layout(set = 0, binding = 1) buffer Destination {
+    uint values[];
+} destination;
+
+void main() {
+    destination.values[0] = source.values[0] * 3u;
+}

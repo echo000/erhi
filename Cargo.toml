@@ -1,0 +1,128 @@
+[package]
+name = "erhi"
+version = "0.1.0"
+edition = "2024"
+# Minimum Rust version: the source uses let chains.
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+description = "A rendering hardware interface over Vulkan and Direct3D 12, with hardware ray tracing"
+readme = "README.md"
+repository = "https://github.com/echo000/erhi"
+keywords = ["graphics", "rendering", "vulkan", "direct3d", "raytracing"]
+categories = ["graphics", "rendering", "rendering::graphics-api"]
+# README screenshots are not part of the published package.
+exclude = ["images/"]
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_debug_implementations = "warn"
+missing_docs = "warn"
+
+[lints.clippy]
+undocumented_unsafe_blocks = "warn"
+todo = "warn"
+dbg_macro = "warn"
+
+[features]
+default = ["vulkan", "dx12"]
+vulkan = ["dep:ash", "dep:gpu-allocator", "gpu-allocator/vulkan"]
+dx12 = ["dep:windows", "dep:gpu-allocator", "gpu-allocator/d3d12"]
+# The tests that need a Vulkan or DX12 device: every one is `#[ignore]`d.
+# Without the feature they are not even compiled, so `cargo test` stays
+# fast; run them with `cargo test --features gpu_tests -- --ignored`.
+gpu_tests = []
+
+[dependencies]
+ash = { version = "0.38", optional = true }
+gpu-allocator = { version = "0.28", default-features = false, features = ["std"], optional = true }
+raw-window-handle = "0.6"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62.2", optional = true, features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Direct3D",
+    "Win32_Graphics_Direct3D12",
+    "Win32_Graphics_Dxgi",
+    "Win32_Graphics_Dxgi_Common",
+    "Win32_Security",
+    "Win32_System_Threading",
+] }
+
+[dev-dependencies]
+winit = "0.30"
+
+[[example]]
+name = "window"
+
+[[example]]
+name = "triangle"
+
+[[example]]
+name = "backend_swap"
+
+[[example]]
+name = "life"
+
+[[example]]
+name = "rt_triangle"
+
+[[example]]
+name = "rt_scene"
+
+[[test]]
+name = "dx12_rt"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "frame_ring"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "pipelines"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "present"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "queued_tlas"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "sets"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "raster_state"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "vulkan_rt"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "gpu_features"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "device_loss"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "triangles"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "refusals"
+required-features = ["gpu_tests"]
+
+[[test]]
+name = "transitions"
+required-features = ["gpu_tests"]
+
+# docs.rs builds on Linux unless told otherwise, which would leave the
+# Direct3D 12 backend out of the documentation.
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
+targets = ["x86_64-pc-windows-msvc"]

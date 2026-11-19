@@ -1,0 +1,4 @@
+# Compiled shaders and images are bytes, never text.
+*.spv binary
+*.dxil binary
+*.png binary
